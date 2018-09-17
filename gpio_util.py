@@ -11,10 +11,13 @@ class WRTGpioUtil(object):
 
     #SetPinInit
     PIN_INIT_SUCCESS            = 4
-    PIN_DIR_SET_SUCCESS            = 5
+    PIN_DIR_SET_SUCCESS         = 5
+    PIN_SET_VAL_SUCCESS         = 6
     PIN_INIT_ERROR              = -1
-    PIN_DIR_SET_ERROR              = -1
-    
+    PIN_DIR_SET_ERROR           = -2
+    PIN_SET_VAL_ERROR           = -3
+    PIN_GET_VAL_ERROR           = -4
+
     ########################################
 
     def __init__(self, name, score):
@@ -22,7 +25,7 @@ class WRTGpioUtil(object):
         self.score = score
 
     # echo "29" > /sys/class/gpio/export
-    def InitPin(self, type):
+    def initPin(self, type):
         try:
             with open("/sys/class/gpio/" + type, "w") as fd:
                 fd.write(PinNum)
@@ -39,12 +42,12 @@ class WRTGpioUtil(object):
         return InitPin("unexport");
 
     # echo "out" > /sys/class/gpio/gpio29/direction
-    def SetPinDir(self, get_Direction):
+    def setPinDir(self, direction):
         try:
-            with open("/sys/class/gpio/gpio" + PinNum + "/direction") as fd:
-                if get_Direction == PIN_IN:
+            with open("/sys/class/gpio/gpio" + PinNum + "/direction", "w") as fd:
+                if direction == PIN_IN:
                     fd.write("in")
-                elif get_Direction == PIN_OUT:
+                elif direction == PIN_OUT:
                     fd.write("out")
                 fd.close()
             return PIN_INIT_SUCCESS
@@ -52,11 +55,27 @@ class WRTGpioUtil(object):
             print "error set pin direction"
             return PIN_DIR_SET_ERROR
 
-    # echo $0/1$ > /sys/class/gpio/gpio$PinNum$/value
-    def SetPinValue(Pin_Value get_Value);   
+    # echo "1" > /sys/class/gpio/gpio29/value
+    def setPinValue(self, value):   
+        try:
+            with open("/sys/class/gpio/gpio" + PinNum + "/value", "w") as fd:
+                if value == PIN_LOW:
+                    fd.write("0")
+                elif value == PIN_HIGH:
+                    fd.write("1")
+                fd.close()
+            return PIN_SET_VAL_SUCCESS
+        except Exception as e:
+            print "error set pin value"
+            return PIN_SET_VAL_ERROR
 
-    # Export + SetPinDir + SetPinValue
-    def SetPin(string get_PinNum, Pin_Direction get_Direction, Pin_Value get_Value);    
-
-    # unexport
-    def DelPin();   
+    def getPinValue(self):   
+        get_value = 0
+        try:
+            with open("/sys/class/gpio/gpio" + PinNum + "/value", "r") as fd:+
+                get_value = read()
+                fd.close()
+            return get_value
+        except Exception as e:
+            print "error get pin value"
+            return PIN_GET_VAL_ERROR

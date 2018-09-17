@@ -1,5 +1,5 @@
 
-
+import os
 
 class WRTGpioUtil(object):
     #attributes
@@ -36,32 +36,33 @@ class WRTGpioUtil(object):
     Init Export/UnExport
     This is used in SetPinExport() and SetPinUnExport() to initiate pins
     '''
+
+
+
+
+
+
+
+
     def InitPin(string type):
-        # File Open
-        fd = open("/sys/class/gpio/" + type, "w") # open export/unexport file
-        if fd == FILE_OPEN_ERROR:
+        try:
+            with open("/sys/class/gpio/" + type, "w") as fd:
+                fd.write(PinNum)
+                fd.close()
+            return PIN_INIT_SUCCESS
+        except Exception as e:
+            print "error initialte pin"
             return PIN_INIT_FILE_OPEN_ERROR
 
-        #File Write
-        if (write(fd, PinNum.c_str(), sizeof(PinNum.c_str())) == FILE_WRITE_ERROR):  # write PinNum to file
-            return PIN_INIT_FILE_WRITE_ERROR;
-
-        # File Close
-        if (close(fd) == FILE_CLOSE_ERROR):
-            return PIN_INIT_FILE_CLOSE_ERROR;
-
-        return PIN_INIT_SUCCESS;
-
-    # echo $PinNum$ > /sys/class/gpio/export
     def exportPin():
         return InitPin("export");
 
-    # echo $PinNum$ > /sys/class/gpio/unexport
     def unExportPin():   
         return InitPin("unexport");
 
     # echo $in/out$ > /sys/class/gpio/gpio$PinNum$/direction
-    def SetPinDir(Pin_Direction get_Direction); 
+    def SetPinDir(Pin_Direction get_Direction):
+        
 
     # echo $0/1$ > /sys/class/gpio/gpio$PinNum$/value
     def SetPinValue(Pin_Value get_Value);   

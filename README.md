@@ -1,2 +1,2 @@
-# openwrt-gpio-util
-Implement a Python based openwrt package to control GPIOs.
+# openwrt-hw-toolbox
+Implement a Python based openwrt package for basic hardware controls.
